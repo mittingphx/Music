@@ -41,15 +41,15 @@ Truth heard only through their lies
 Don’t embrace the pain they hold
 Let 'em live in stories old
 
-You need to lose the inn cell!
+You need to lose the incel!
 They never know how big their heads will swell 
-You need to lose the inn cell!
+You need to lose the incel!
 You suck the pity of a stepford hell?
 Then oh well!
 
-That boy is just an in cell!
+That boy is just an incel!
 His mother touched him before show and tell
-You know he’s such an inn cell!
+You know he’s such an incel!
 You can sense it from the way he smells
 You can sense it from the way he smells
 You can sense it from the way he smells

@@ -2,7 +2,7 @@
 
 ```textl
 Written by Scott Mitting and Seth Aevum
-Demo Performed by Suno under control by Seth Aevum
+Demo Performed by Seth Aevum using Suno
 Recorded and released by... you?
 ```
 

@@ -7,7 +7,8 @@ Recorded and released by... you?
 ```
 
 # Song Demo
-[stay-away-the-sad-ones.mp3](https://github.com/mittingphx/Music/blob/main/demos/stay-away-the-sad-ones.mp3)
+[listen online](https://mittingphx.github.io/Music/demos/
+
 
 ## Lyrics
 

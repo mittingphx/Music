@@ -1,4 +1,9 @@
-# Song
+# Stay Away the Sad Ones Cry
+
+Written by Scott Mitting and ChatGPT 4o
+Demo Performed by Suno under control by ChatGPT
+Recorded and released by... you?
+
 
 ## Lyrics
 

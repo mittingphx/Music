@@ -2,7 +2,7 @@
 
 ```text
 Written by Scott Mitting and Seth Aevum
-Demo Performed by Seth Aevum using Suno
+Demo rendered using Suno
 Recorded and released by... you?
 ```
 

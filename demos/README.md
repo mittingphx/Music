@@ -7,7 +7,7 @@ Recorded and released by... you?
 ```
 
 # Song Demo
-[listen online](https://mittingphx.github.io/Music/demos/
+[listen online](https://mittingphx.github.io/Music/demos/)
 
 
 ## Lyrics

@@ -1,10 +1,13 @@
-# Stay Away the Sad Ones Cry
+# Stay Away the Sad Ones
 
-```textl
+```text
 Written by Scott Mitting and Seth Aevum
 Demo Performed by Seth Aevum using Suno
 Recorded and released by... you?
 ```
+
+# Song Demo
+[stay-away-the-sad-ones.mp3](https://github.com/mittingphx/Music/blob/main/demos/stay-away-the-sad-ones.mp3)
 
 ## Lyrics
 

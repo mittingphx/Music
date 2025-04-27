@@ -1,11 +1,14 @@
 # Stay Away the Sad Ones Cry
 
+```textl
 Written by Scott Mitting and Seth Aevum
 Demo Performed by Suno under control by Seth Aevum
 Recorded and released by... you?
-
+```
 
 ## Lyrics
+
+```text
 
 [Verse]
 Don't touch the lonely hearts
@@ -58,4 +61,7 @@ You know he’s such an incel!
 You can sense it from the way he smells
 You can sense it from the way he smells
 You can sense it from the way he smells
-Your underwear. 
+Your underwear.
+
+```
+

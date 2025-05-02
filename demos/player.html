@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Player - Scott Mitting Music</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .player-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .song-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .song-info {
+            margin-bottom: 2rem;
+        }
+
+        .song-title {
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+            color: #2c3e50;
+        }
+
+        .song-credits {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .audio-player {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #2c3e50;
+            border-radius: 2px;
+            width: 0;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2c3e50;
+            padding: 0.5rem;
+        }
+
+        .control-btn:hover {
+            color: #34495e;
+        }
+
+        .lyrics-container {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .lyrics {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .player-container {
+                padding: 1rem;
+            }
+
+            .song-title {
+                font-size: 1.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <img id="song-image" class="song-image" src="default-image.jpg" alt="Song Cover">
+        
+        <div class="song-info">
+            <h1 id="song-title" class="song-title">Loading...</h1>
+            <p id="song-credits" class="song-credits">Loading...</p>
+        </div>
+
+        <div class="audio-player">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            <div class="controls">
+                <button id="prev-btn" class="control-btn">⏮️</button>
+                <button id="play-btn" class="control-btn">▶️</button>
+                <button id="next-btn" class="control-btn">⏭️</button>
+            </div>
+        </div>
+
+        <div class="lyrics-container">
+            <h2>Lyrics</h2>
+            <pre id="lyrics" class="lyrics">Loading lyrics...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Default image if none exists
+        const DEFAULT_IMAGE = 'default-image.jpg';
+
+        // Get song name from URL hash
+        let songName = window.location.hash.substring(1);
+        if (!songName) {
+            document.querySelector('.error-message').textContent = 'Please provide a song name in the URL hash (e.g., #song-name)';
+            return;
+        }
+
+        // Get song files
+        const audioFile = `../songs/${songName}.mp3`;
+        const lyricsFile = `../songs/${songName}.txt`;
+        const imageFile = `../songs/${songName}.jpg`;
+
+        // Audio player setup
+        const audio = new Audio(audioFile);
+        const progressBar = document.getElementById('progress-bar');
+        const currentTime = document.getElementById('current-time');
+        const duration = document.getElementById('duration');
+        const playBtn = document.getElementById('play-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const songImage = document.getElementById('song-image');
+        const songTitle = document.getElementById('song-title');
+        const songCredits = document.getElementById('song-credits');
+        const lyricsDisplay = document.getElementById('lyrics');
+
+        // Load image
+        songImage.src = imageFile;
+        songImage.onerror = () => {
+            songImage.src = DEFAULT_IMAGE;
+        };
+
+        // Load lyrics
+        fetch(lyricsFile)
+            .then(response => response.text())
+            .then(text => {
+                // Parse lyrics file to extract title and credits
+                const lines = text.split('\n');
+                songTitle.textContent = lines[0].replace('# ', '');
+                
+                const credits = lines.find(line => line.startsWith('## Credits'));
+                if (credits) {
+                    const creditsIndex = lines.indexOf(credits);
+                    const creditsLines = lines.slice(creditsIndex + 1, lines.indexOf('## Lyrics'));
+                    songCredits.textContent = creditsLines.join('\n').replace(/:/g, ': ').trim();
+                }
+
+                // Find lyrics section
+                const lyricsIndex = lines.indexOf('## Lyrics');
+                const lyrics = lines.slice(lyricsIndex + 1).join('\n').trim();
+                lyricsDisplay.textContent = lyrics;
+            })
+            .catch(error => {
+                lyricsDisplay.textContent = 'Error loading lyrics';
+            });
+
+        // Update progress bar
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Update time display
+            currentTime.textContent = formatTime(audio.currentTime);
+            duration.textContent = formatTime(audio.duration);
+        });
+
+        // Play/pause button
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸️';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶️';
+            }
+        });
+
+        // Format time helper
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Previous/next buttons (to be implemented with song list)
+        prevBtn.addEventListener('click', () => {
+            // To be implemented
+        });
+
+        nextBtn.addEventListener('click', () => {
+            // To be implemented
+        });
+    </script>
+    <script src="MiniDemoPlayer.js"></script>
+    <script>
+        // Initialize player
+        const player = new MiniDemoPlayer(window.location.hash.substring(1));
+    </script>
+</body>
+</html>

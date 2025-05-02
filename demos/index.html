@@ -1,127 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stay Away the Sad Ones - Demo</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scott Mitting - Music Demos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    audio {
-      width: 100%;
-      max-width: 600px;
-      margin: 1rem 0;
-    }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-    .lyrics {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 800px;
-      width: 100%;
-      white-space: pre-wrap;
-    }
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
 
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: #777;
-    }
-  </style>
+        h2 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 0 0 20px 0;
+        }
+
+        .song-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .song-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .song-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .song-info {
+            padding: 20px;
+        }
+
+        .song-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+
+        .song-credits {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .song-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .play-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .play-btn:hover {
+            background: #2980b9;
+        }
+
+        .view-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .song-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .song-image {
+                height: 150px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Scott Mitting - Music Demos</h1>
+            <p>Explore my collection of music demos and original compositions</p>
+        </header>
 
-  <h1>Stay Away the Sad Ones</h1>
+        <div class="song-grid" id="songGrid">
+            <!-- Songs will be dynamically loaded here -->
+        </div>
+    </div>
 
-  <p>Written by Scott Mitting and Seth Aevum.  Demo rendered using Suno.  Recorded and released by... you?   Copyright Six of Swords Entertainment.  All rights reserved.</p>
+    <footer>
+        <p>&copy; 2025 Scott Mitting. All rights reserved.</p>
+    </footer>
 
-  <audio controls>
-    <source src="stay-away-the-sad-ones.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+    <script>
+        // Load songs from manifest
+        async function loadSongs() {
+            try {
+                const response = await fetch('../songs/manifest.txt');
+                const text = await response.text();
+                const songs = text.split('\n').filter(song => song.trim());
 
-  <div class="lyrics">
-    <h2>Lyrics</h2>
-    <p>
-# Stay Away the Sad Ones
+                const songGrid = document.getElementById('songGrid');
+                songs.forEach(song => {
+                    const card = createSongCard(song);
+                    songGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading songs:', error);
+            }
+        }
 
-## Lyrics
+        // Create song card
+        function createSongCard(songName) {
+            const card = document.createElement('div');
+            card.className = 'song-card';
 
-[Verse]
-Don't touch the lonely hearts
-They wanna stay in the dark
-Cryin' in their empty bed
-Dreams of love long since dead
+            // Load song info from lyrics file
+            fetch(`../songs/${songName}.txt`)
+                .then(response => response.text())
+                .then(text => {
+                    const lines = text.split('\n');
+                    const title = lines[0].replace('# ', '');
+                    const credits = lines.find(line => line.startsWith('## Credits'));
+                    const creditsText = credits ? lines.slice(lines.indexOf(credits) + 1, lines.indexOf('## Lyrics')).join('\n') : '';
 
-[Verse 2]
-Eyes full of bitter tears
-Voices drown in hidden fears
-Keep your warm touch away
-They got no words to say
+                    card.innerHTML = `
+                        <img class="song-image" src="../songs/${songName}.jpg" onerror="this.src='default-image.jpg'" alt="${title} cover">
+                        <div class="song-info">
+                            <h2 class="song-title">${title}</h2>
+                            <div class="song-credits">${creditsText}</div>
+                            <div class="song-actions">
+                                <button class="action-btn play-btn" onclick="playSong('${songName}')">Play</button>
+                                <button class="action-btn view-btn" onclick="viewSong('${songName}')">View</button>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error loading song info:', error);
+                    // Fallback content
+                    card.innerHTML = `
+                        <img class="song-image" src="default-image.jpg" alt="${songName} cover">
+                        <div class="song-info">
+                            <h2 class="song-title">${songName}</h2>
+                            <div class="song-credits">Loading...</div>
+                            <div class="song-actions">
+                                <button class="action-btn play-btn" onclick="playSong('${songName}')">Play</button>
+                                <button class="action-btn view-btn" onclick="viewSong('${songName}')">View</button>
+                            </div>
+                        </div>
+                    `;
+                });
 
-[Chorus]
-Stay away the sad ones cry
-Virgin skin they wanna die
-Keep your kindness locked in tight
-They prefer the cold
-Black night
+            return card;
+        }
 
-[Verse 3]
-Silent screams inside their heads
-Restless dreams in empty beds
-Love's a shadow they can't chase
-Heartbreak fills the empty space
+        // Navigate to player
+        function playSong(songName) {
+            window.location.href = `player.html#${songName}`;
+        }
 
-[Chorus]
-Stay away the sad ones cry
-Virgin skin they wanna die
-Keep your kindness locked in tight
-They prefer the cold
-Black night
+        // Navigate to player (same as playSong for now)
+        function viewSong(songName) {
+            window.location.href = `player.html#${songName}`;
+        }
 
-[Verse 4]
-Ghosts of laughter
-Mocking eyes
-Truth heard only through their lies
-Don’t embrace the pain they hold
-Let 'em live in stories old
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadSongs);
+    </script>
 
-You need to lose the incel!
-They never know how big their heads will swell 
-You need to lose the incel!
-You suck the pity of a stepford hell?
-Then oh well!
-
-That boy is just an incel!
-His mother touched him before show and tell
-You know he’s such an incel!
-You can sense it from the way he smells
-You can sense it from the way he smells
-You can sense it from the way he smells
-Your underwear.
-
-      
-    </p>
-  </div>
-
-  <footer>
-    &copy; 2025 Scott Mitting
-  </footer>
+    <footer>
+        &copy; 2025 Scott Mitting
+    </footer>
 
 </body>
 </html>

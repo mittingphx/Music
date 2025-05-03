@@ -26,22 +26,24 @@ This particular repository is dedicated to Scott Mitting’s own work under Six 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) – Detailed overview of the app's internal structure and rendering flow.
 - [`docs/PROJECT_GUIDELINES.md`](docs/PROJECT_GUIDELINES.md) – Setup, contribution, and collaboration guidelines.
 - [`docs/AI_RULES.md`](docs/AI_RULES.md) – AI prompt-writing best practices and content handling policies for use in Windsurf and Cursor environments.
+- [`docs/APP_SH_USAGE.md`](docs/APP_SH_USAGE.md) – Detailed usage guide for the `app.sh` command-line tool.
 
 ---
 
 ## 🚀 Preview Locally
 
-You can preview the music player in your browser using Python's built-in server:
+You can preview the music player using the `app.sh` command-line tool:
 
 ```bash
-python -m http.server 8000
+wsl ./app.sh start
 ```
 
-Then open:
+The command will:
+- Start the development server on port 3000
+- Automatically open your browser to http://localhost:3000
+- Check for and install any required dependencies
 
-```
-http://localhost:8000
-```
+For more detailed usage information, see the [APP_SH_USAGE.md](docs/APP_SH_USAGE.md) documentation.
 
 ---
 

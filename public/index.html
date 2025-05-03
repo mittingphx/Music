@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Demos - Folders</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .folder-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .folder-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .folder-item:hover {
+            transform: translateY(-2px);
+        }
+        .folder-name {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .folder-readme {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #e74c3c;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Demos - Folders</h1>
+    <ul class="folder-list" id="folderList"></ul>
+
+    <script>
+        async function loadFolderReadme(folder) {
+            try {
+                const response = await fetch(`${folder}/README.md`);
+                if (!response.ok) {
+                    return null;
+                }
+                return await response.text();
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function createFolderItem(folder) {
+            const item = document.createElement('li');
+            item.className = 'folder-item';
+            
+            const folderName = document.createElement('div');
+            folderName.className = 'folder-name';
+            folderName.textContent = folder;
+            
+            const readmeContainer = document.createElement('div');
+            readmeContainer.className = 'folder-readme';
+            readmeContainer.textContent = 'Loading README...';
+            
+            item.appendChild(folderName);
+            item.appendChild(readmeContainer);
+            
+            return { item, readmeContainer };
+        }
+
+        async function initialize() {
+            const folderList = document.getElementById('folderList');
+            const folders = ['demos', 'songs']; // List of folders to display
+
+            for (const folder of folders) {
+                const { item, readmeContainer } = createFolderItem(folder);
+                folderList.appendChild(item);
+
+                const readmeContent = await loadFolderReadme(folder);
+                if (readmeContent) {
+                    readmeContainer.innerHTML = markdownToHtml(readmeContent);
+                } else {
+                    readmeContainer.textContent = 'No README.md found';
+                }
+            }
+        }
+
+        // Simple markdown to HTML conversion
+        function markdownToHtml(markdown) {
+            return markdown
+                .replace(/^#\s+(.+)/, '<h2>$1</h2>')
+                .replace(/^##\s+(.+)/g, '<h3>$1</h3>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+    "[.windsurfrules]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": null,
+        "files.associations": {
+            "*.windsurfrules": "plaintext"
+        }
+    }
+}

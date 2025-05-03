@@ -48,21 +48,44 @@ class MiniDemoPlayer {
             const response = await fetch(this.lyricsFile);
             const text = await response.text();
             
-            // Parse lyrics file
-            const lines = text.split('\n');
+            // Replace CRLF with LF for consistent line endings
+            const normalizedText = text.replace(/\r\n/g, '\n');
+            
+            // Parse lyrics file to extract title and credits
+            const lines = normalizedText.split('\n');
             this.songTitle.textContent = lines[0].replace('# ', '');
             
-            const credits = lines.find(line => line.startsWith('## Credits'));
-            if (credits) {
-                const creditsIndex = lines.indexOf(credits);
-                const creditsLines = lines.slice(creditsIndex + 1, lines.indexOf('## Lyrics'));
-                this.songCredits.textContent = creditsLines.join('\n').replace(/:/g, ': ').trim();
+            // Find the credits section
+            const creditsIndex = lines.indexOf('## Credits');
+            const lyricsIndex = lines.indexOf('## Lyrics');
+            
+            // Extract and format credits
+            if (creditsIndex !== -1 && lyricsIndex !== -1) {
+                const creditsLines = lines.slice(creditsIndex + 1, lyricsIndex);
+                const formattedCredits = creditsLines
+                    .map(line => {
+                        const [key, value] = line.split(':').map(part => part.trim());
+                        if (key && value) {
+                            return `${key}: ${value}`;
+                        }
+                        return line.trim();
+                    })
+                    .filter(line => line)
+                    .join('<br>');
+                
+                this.songCredits.innerHTML = formattedCredits;
             }
 
-            // Find lyrics section
-            const lyricsIndex = lines.indexOf('## Lyrics');
-            const lyrics = lines.slice(lyricsIndex + 1).join('\n').trim();
-            this.lyricsDisplay.textContent = lyrics;
+            // Extract and format lyrics
+            if (lyricsIndex !== -1) {
+                const lyricsLines = lines.slice(lyricsIndex + 1);
+                const formattedLyrics = lyricsLines
+                    .map(line => line.trim())
+                    .filter(line => line)
+                    .join('<br>');
+                
+                this.lyricsDisplay.innerHTML = formattedLyrics;
+            }
         } catch (error) {
             this.lyricsDisplay.textContent = 'Error loading lyrics';
         }

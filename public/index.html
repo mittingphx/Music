@@ -32,6 +32,18 @@
         .folder-item:hover {
             transform: translateY(-2px);
         }
+        .folder-icon {
+            margin-right: 8px;
+        }
+        .folder-name {
+            text-decoration: none;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .folder-name:hover {
+            color: #3498db;
+        }
         .folder-name {
             font-size: 1.2em;
             color: #2c3e50;
@@ -75,23 +87,43 @@
             const item = document.createElement('li');
             item.className = 'folder-item';
             
-            const folderName = document.createElement('div');
-            folderName.className = 'folder-name';
-            folderName.textContent = folder;
+            const folderLink = document.createElement('a');
+            folderLink.href = folder + '/';
+            folderLink.className = 'folder-name';
+            folderLink.innerHTML = `<span class="folder-icon">📁</span> ${folder}`;
             
             const readmeContainer = document.createElement('div');
             readmeContainer.className = 'folder-readme';
             readmeContainer.textContent = 'Loading README...';
             
-            item.appendChild(folderName);
+            item.appendChild(folderLink);
             item.appendChild(readmeContainer);
             
             return { item, readmeContainer };
         }
 
+        async function fetchFolders() {
+            try {
+                const response = await fetch('/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const htmlDoc = parser.parseFromString(text, 'text/html');
+                const links = htmlDoc.getElementsByTagName('a');
+                
+                const folders = Array.from(links)
+                    .filter(link => link.textContent.endsWith('/') && link.getAttribute('href') !== './')
+                    .map(link => link.textContent.slice(0, -1));
+                
+                return folders;
+            } catch (error) {
+                console.error('Error fetching folders:', error);
+                return [];
+            }
+        }
+
         async function initialize() {
             const folderList = document.getElementById('folderList');
-            const folders = ['demos', 'songs']; // List of folders to display
+            const folders = await fetchFolders();
 
             for (const folder of folders) {
                 const { item, readmeContainer } = createFolderItem(folder);
@@ -104,6 +136,12 @@
                     readmeContainer.textContent = 'No README.md found';
                 }
             }
+
+            // Add public README.md at the bottom
+            const readmeContainer = document.createElement('div');
+            readmeContainer.className = 'folder-readme';
+            readmeContainer.innerHTML = markdownToHtml(await loadFolderReadme('')); // Load root README.md
+            folderList.appendChild(readmeContainer);
         }
 
         // Simple markdown to HTML conversion

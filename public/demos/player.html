@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Player - Scott Mitting Music</title>
+    <link rel="stylesheet" href="player.css">
+</head>
+<body>
+    <a href="/" class="back-button">← Back to Demo List</a>
+    <div class="player-container">
+        <img id="song-image" class="song-image" src="default-image.jpg" alt="Song Cover">
+        
+        <div class="song-info">
+            <h1 id="song-title" class="song-title">Loading...</h1>
+            <p id="song-credits" class="song-credits">Loading...</p>
+        </div>
+
+        <div class="audio-player">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            <div class="controls">
+                <button id="prev-btn" class="control-btn">⏮️</button>
+                <button id="play-btn" class="control-btn">▶️</button>
+                <button id="next-btn" class="control-btn">⏭️</button>
+            </div>
+        </div>
+
+        <div class="lyrics-container">
+            <h2>Lyrics</h2>
+            <div id="lyrics" class="lyrics">Loading lyrics...</div>
+        </div>
+    </div>
+
+    <script src="MiniDemoPlayer.js"></script>
+    <script>
+        // Initialize the mini demo player
+        const songName = window.location.hash.substring(1);
+        if (!songName) {
+            document.querySelector('.error-message').textContent = 'Please provide a song name in the URL hash (e.g., #song-name)';
+            return;
+        }
+
+        new MiniDemoPlayer(songName);    
+    </script>
+</body>
+</html>

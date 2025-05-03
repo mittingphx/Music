@@ -16,7 +16,7 @@ RESET="\033[0m"
 SERVER_PID=""
 PORT=3000
 PYTHON_CMD="python3"
-SONG_PATH="./songs/"
+SONG_PATH="./public/songs/"
 APP_VERSION="0.1.0"
 
 # Functions for colored output

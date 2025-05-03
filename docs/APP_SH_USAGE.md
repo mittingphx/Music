@@ -91,6 +91,8 @@ wsl ./app.sh list
 - Always use `wsl ./app.sh` when running commands from Windows
 - The server runs in WSL (Windows Subsystem for Linux)
 - Web-accessible files are stored in the `./public/` directory:
-  - `demos/` - Contains the demo player and related files
-  - `songs/` - Contains audio files, images, and lyrics
+  - `demos/` - Demo player and demo list pages
+  - `songs/` - Audio files, images, and lyrics
+
+For detailed documentation of the demo player and song structure, see the [public/README.md](../public/README.md).
 - The application version is 0.1.0

@@ -22,9 +22,9 @@ This particular repository is dedicated to Scott Mitting’s own work under Six 
 
 ## 📁 Directory Overview
 
-- [`public/`](public/) – Contains all web-accessible files:
-  - `demos/` – Draft songs, musical sketches, and experiments available for feedback, collaboration, or future production.
-  - `songs/` – Audio files, images, and lyrics for the demo player.
+- [`public/`](public/) – Contains all web-accessible files. See [public/README.md](public/README.md) for detailed documentation of the demo player and song structure.
+  - `demos/` – Demo player and demo list pages
+  - `songs/` – Audio files, images, and lyrics for the demo player
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) – Detailed overview of the app's internal structure and rendering flow.
 - [`docs/PROJECT_GUIDELINES.md`](docs/PROJECT_GUIDELINES.md) – Setup, contribution, and collaboration guidelines.
 - [`docs/AI_RULES.md`](docs/AI_RULES.md) – AI prompt-writing best practices and content handling policies for use in Windsurf and Cursor environments.

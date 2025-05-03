@@ -17,9 +17,10 @@
 wsl ./app.sh start
 ```
 
-- Starts the development server on port 3000
+- Starts the development server on port 3000 with the `public` directory as the root
 - Automatically opens the browser to http://localhost:3000
 - Checks for required dependencies and installs them if needed
+- The server serves files from the `public` directory, which contains both `demos/` and `songs/` folders
 
 ### Stop Server
 ```bash
@@ -89,5 +90,7 @@ wsl ./app.sh list
 
 - Always use `wsl ./app.sh` when running commands from Windows
 - The server runs in WSL (Windows Subsystem for Linux)
-- Songs are stored in the `./songs/` directory
+- Web-accessible files are stored in the `./public/` directory:
+  - `demos/` - Contains the demo player and related files
+  - `songs/` - Contains audio files, images, and lyrics
 - The application version is 0.1.0

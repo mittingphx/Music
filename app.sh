@@ -116,16 +116,27 @@ function start_server() {
         print_warn "Server is already running (PID: $SERVER_PID)"
         return 1
     fi
+    
+    # Check if public directory exists
+    if [ ! -d "public" ]; then
+        print_error "Public directory not found. Please create it and add your web files."
+        return 1
+    fi
+    
     print_success "Starting development server on port $PORT..."
-    $PYTHON_CMD -m http.server $PORT 2>/dev/null &
+    # Change to public directory and start server
+    (cd public && $PYTHON_CMD -m http.server $PORT 2>/dev/null) &
     SERVER_PID=$!
     sleep 1
+    
     if ! kill -0 "$SERVER_PID" 2>/dev/null; then
         print_error "Failed to start server on port $PORT"
         return 1
     fi
+    
     print_success "Server started on port $PORT (PID: $SERVER_PID)"
     print_info "Access the site at: http://localhost:$PORT"
+    print_info "The public directory is the root of the web server"
 }
 
 function stop_server() {

@@ -22,7 +22,9 @@ This particular repository is dedicated to Scott Mitting’s own work under Six 
 
 ## 📁 Directory Overview
 
-- [`demos/`](demos/) – Draft songs, musical sketches, and experiments available for feedback, collaboration, or future production.
+- [`public/`](public/) – Contains all web-accessible files:
+  - `demos/` – Draft songs, musical sketches, and experiments available for feedback, collaboration, or future production.
+  - `songs/` – Audio files, images, and lyrics for the demo player.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) – Detailed overview of the app's internal structure and rendering flow.
 - [`docs/PROJECT_GUIDELINES.md`](docs/PROJECT_GUIDELINES.md) – Setup, contribution, and collaboration guidelines.
 - [`docs/AI_RULES.md`](docs/AI_RULES.md) – AI prompt-writing best practices and content handling policies for use in Windsurf and Cursor environments.
@@ -39,7 +41,7 @@ wsl ./app.sh start
 ```
 
 The command will:
-- Start the development server on port 3000
+- Start the development server on port 3000 with the `public` directory as the root
 - Automatically open your browser to http://localhost:3000
 - Check for and install any required dependencies
 

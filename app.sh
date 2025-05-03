@@ -137,6 +137,7 @@ function start_server() {
     print_success "Server started on port $PORT (PID: $SERVER_PID)"
     print_info "Access the site at: http://localhost:$PORT"
     print_info "The public directory is the root of the web server"
+    print_info "Note: The server serves files from the public directory, so http://localhost:$PORT/ will show public/index.html"
 }
 
 function stop_server() {

@@ -73,7 +73,7 @@
     <script>
         async function loadFolderReadme(folder) {
             try {
-                const response = await fetch(`${folder}/README.md`);
+                const response = await fetch(`${folder === '' ? '' : folder + '/'}README.md`);
                 if (!response.ok) {
                     return null;
                 }
@@ -114,7 +114,8 @@
                     .filter(link => link.textContent.endsWith('/') && link.getAttribute('href') !== './')
                     .map(link => link.textContent.slice(0, -1));
                 
-                return folders;
+                // Remove 'public' from the list since we're already in the public directory
+                return folders.filter(folder => folder !== 'public');
             } catch (error) {
                 console.error('Error fetching folders:', error);
                 return [];
@@ -140,7 +141,7 @@
             // Add public README.md at the bottom
             const readmeContainer = document.createElement('div');
             readmeContainer.className = 'folder-readme';
-            readmeContainer.innerHTML = markdownToHtml(await loadFolderReadme('')); // Load root README.md
+            readmeContainer.innerHTML = markdownToHtml(await loadFolderReadme('public')); // Load public README.md
             folderList.appendChild(readmeContainer);
         }
 

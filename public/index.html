@@ -92,34 +92,13 @@
             folderLink.className = 'folder-name';
             folderLink.innerHTML = `<span class="folder-icon">📁</span> ${folder}`;
             
-            const readmeContainer = document.createElement('div');
-            readmeContainer.className = 'folder-readme';
-            readmeContainer.textContent = 'Loading README...';
-            
             item.appendChild(folderLink);
-            item.appendChild(readmeContainer);
             
-            return { item, readmeContainer };
+            return { item };
         }
 
         async function fetchFolders() {
-            try {
-                const response = await fetch('/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(text, 'text/html');
-                const links = htmlDoc.getElementsByTagName('a');
-                
-                const folders = Array.from(links)
-                    .filter(link => link.textContent.endsWith('/') && link.getAttribute('href') !== './')
-                    .map(link => link.textContent.slice(0, -1));
-                
-                // Remove 'public' from the list since we're already in the public directory
-                return folders.filter(folder => folder !== 'public');
-            } catch (error) {
-                console.error('Error fetching folders:', error);
-                return [];
-            }
+            return ['demos'];
         }
 
         async function initialize() {
@@ -127,15 +106,8 @@
             const folders = await fetchFolders();
 
             for (const folder of folders) {
-                const { item, readmeContainer } = createFolderItem(folder);
+                const { item } = createFolderItem(folder);
                 folderList.appendChild(item);
-
-                const readmeContent = await loadFolderReadme(folder);
-                if (readmeContent) {
-                    readmeContainer.innerHTML = markdownToHtml(readmeContent);
-                } else {
-                    readmeContainer.textContent = 'No README.md found';
-                }
             }
 
             // Add public README.md at the bottom

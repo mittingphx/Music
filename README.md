@@ -1,5 +1,7 @@
 # 🎵 Scott Mitting Music Demos
 
+Public demo of this project is available [here](https://mittingphx.github.io/Music/)
+
 ## 🧭 Table of Contents
 - [About](#-about)
 - [Directory Overview](#-directory-overview)

@@ -7,7 +7,16 @@
  * @version 0.1.1
  */
 
+/**
+ * A class representing a mini music player for web-based song playback.
+ * Provides functionality for playing, pausing, and displaying song information.
+ */
 class MiniDemoPlayer {
+    /**
+     * Creates a new MiniDemoPlayer instance.
+     * 
+     * @param {string} songName - The name of the song to play (without file extension)
+     */
     constructor(songName) {
         this.songName = songName;
         if (this.songName.indexOf('?') > -1) {
@@ -48,6 +57,9 @@ class MiniDemoPlayer {
         }
     }
 
+    /**
+     * Initializes the player by setting up event listeners and UI elements.
+     */
     initializePlayer() {
         // Event listeners
         this.audio.addEventListener('timeupdate', () => this.updateProgress());
@@ -60,6 +72,10 @@ class MiniDemoPlayer {
         this.nextBtn.addEventListener('click', () => this.handleNext());
     }
 
+    /**
+     * Loads the song's audio, image, and lyrics from the server.
+     * Handles errors and displays appropriate fallbacks.
+     */
     async loadSong() {
         // Load image
         this.songImage.src = this.imageFile;
@@ -116,6 +132,10 @@ class MiniDemoPlayer {
         }
     }
 
+    /**
+     * Toggles the playback state of the audio.
+     * Changes the play/pause button icon accordingly.
+     */
     togglePlay() {
         if (this.audio.paused) {
             this.audio.play();
@@ -126,36 +146,61 @@ class MiniDemoPlayer {
         }
     }
 
+    /**
+     * Updates the progress bar and current time display based on audio playback.
+     */
     updateProgress() {
         const progress = (this.audio.currentTime / this.audio.duration) * 100;
         this.progressBar.style.width = `${progress}%`;
         this.currentTime.textContent = this.formatTime(this.audio.currentTime);
     }
 
+    /**
+     * Updates the duration display with the total length of the audio.
+     */
     updateDuration() {
         this.duration.textContent = this.formatTime(this.audio.duration);
     }
 
+    /**
+     * Formats seconds into a MM:SS time string.
+     * 
+     * @param {number} seconds - The time in seconds to format
+     * @returns {string} Formatted time string (e.g., "03:45")
+     */
     formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
+    /**
+     * Handles the end of a song by updating the play button icon.
+     */
     handleSongEnd() {
         this.playBtn.textContent = '▶️';
     }
 
+    /**
+     * Handles the previous song button click.
+     * Currently a placeholder for future playlist functionality.
+     */
     handlePrev() {
         // To be implemented with playlist support
         console.log('Previous song not implemented');
     }
 
+    /**
+     * Handles the next song button click.
+     * Currently a placeholder for future playlist functionality.
+     */
     handleNext() {
         // To be implemented with playlist support
         console.log('Next song not implemented');
     }
 }
 
-// Export for use in other files
-window.MiniDemoPlayer = MiniDemoPlayer;
+}
+
+// Export the class
+MiniDemoPlayer.exportClass();

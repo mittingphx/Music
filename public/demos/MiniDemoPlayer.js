@@ -1,10 +1,19 @@
+/**
+ * MiniDemoPlayer.js
+ * 
+ * A mini player for hosting songs on the web.
+ * 
+ * @author Scott Mitting
+ * @version 0.1.1
+ */
+
 class MiniDemoPlayer {
     constructor(songName) {
         this.songName = songName;
-        this.audioFile = `/songs/${songName}.mp3`;
-        this.lyricsFile = `/songs/${songName}.txt`;
-        this.imageFile = `/songs/${songName}.jpg`;
-        this.DEFAULT_IMAGE = 'default-image.jpg';
+        this.audioFile = `../songs/${songName}.mp3`;
+        this.lyricsFile = `../songs/${songName}.txt`;
+        this.imageFile = `../songs/${songName}.jpg`;
+        this.DEFAULT_IMAGE = '../default-image.jpg';
         
         // Check if we should play the song automatically
         const urlParams = new URLSearchParams(window.location.search);
@@ -52,6 +61,7 @@ class MiniDemoPlayer {
         // Load image
         this.songImage.src = this.imageFile;
         this.songImage.onerror = () => {
+            this.songImage.onerror = () => {};
             this.songImage.src = this.DEFAULT_IMAGE;
         };
 

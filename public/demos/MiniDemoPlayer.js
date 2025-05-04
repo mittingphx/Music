@@ -1,10 +1,14 @@
 class MiniDemoPlayer {
     constructor(songName) {
         this.songName = songName;
-        this.audioFile = `../songs/${songName}.mp3`;
-        this.lyricsFile = `../songs/${songName}.txt`;
-        this.imageFile = `../songs/${songName}.jpg`;
+        this.audioFile = `/songs/${songName}.mp3`;
+        this.lyricsFile = `/songs/${songName}.txt`;
+        this.imageFile = `/songs/${songName}.jpg`;
         this.DEFAULT_IMAGE = 'default-image.jpg';
+        
+        // Check if we should play the song automatically
+        const urlParams = new URLSearchParams(window.location.search);
+        this.shouldAutoPlay = urlParams.get('play') === 'true';
 
         // DOM Elements
         this.audio = new Audio(this.audioFile);
@@ -22,6 +26,14 @@ class MiniDemoPlayer {
         // Initialize player
         this.initializePlayer();
         this.loadSong();
+        
+        // If we should auto-play, start playing after a short delay
+        if (this.shouldAutoPlay) {
+            setTimeout(() => {
+                this.audio.play();
+                this.playBtn.textContent = '⏸️';
+            }, 500); // Small delay to ensure everything is loaded
+        }
     }
 
     initializePlayer() {

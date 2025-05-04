@@ -126,6 +126,13 @@ function start_server() {
     print_success "Starting development server on port $PORT..."
     # Change to public directory and start server
     (cd public && $PYTHON_CMD -m http.server $PORT 2>/dev/null) &
+    # Wait for server to start
+    sleep 1
+    # Verify server is serving from public directory
+    if [ ! -f "public/README.md" ]; then
+        print_error "README.md not found in public directory"
+        return 1
+    fi
     SERVER_PID=$!
     sleep 1
     

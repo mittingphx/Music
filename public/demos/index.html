@@ -78,12 +78,12 @@
             return card;
         }
 
-        // Navigate to player
+        // Navigate to player with play parameter
         function playSong(songName) {
-            window.location.href = `player.html#${songName}`;
+            window.location.href = `player.html#${songName}?play=true`;
         }
 
-        // Navigate to player (same as playSong for now)
+        // Navigate to player without play parameter
         function viewSong(songName) {
             window.location.href = `player.html#${songName}`;
         }

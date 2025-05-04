@@ -7,14 +7,26 @@
     <link rel="stylesheet" href="player.css">
 </head>
 <body>
-    <a href="/" class="back-button">← Back to Demo List</a>
+    <div class="breadcrumb-container">
+        <a href="index.html" class="back-link">
+            <span class="back-icon">&lt;</span>
+        </a>
+        <nav class="breadcrumbs">
+            <a href="index.html" class="breadcrumb-link">🌐 Demo Music Player</a>
+            <span class="separator">></span>
+            <a href="index.html" class="breadcrumb-link">📁 demos/</a>
+            <span class="separator">></span>
+            <span id="song-breadcrumb">🎵 Loading...</span>
+        </nav>
+    </div>
     <div class="player-container">
-        <img id="song-image" class="song-image" src="default-image.jpg" alt="Song Cover">
-        
-        <div class="song-info">
-            <h1 id="song-title" class="song-title">Loading...</h1>
-            <p id="song-credits" class="song-credits">Loading...</p>
-        </div>
+        <div class="song-header">
+            <div class="song-info">
+                <h1 id="song-title" class="song-title">Loading...</h1>
+                <p id="song-credits" class="song-credits">Loading...</p>
+            </div>
+            <img id="song-image" class="song-image" src="default-image.jpg" alt="Song Cover">
+        </div>        
 
         <div class="audio-player">
             <div class="progress-container">
@@ -43,10 +55,12 @@
         const songName = window.location.hash.substring(1);
         if (!songName) {
             document.querySelector('.error-message').textContent = 'Please provide a song name in the URL hash (e.g., #song-name)';
-            return;
+            document.querySelector('.player-container').style.display = 'none';
+        } else {
+            // Set the song breadcrumb text
+            document.getElementById('song-breadcrumb').textContent = '🎵 ' + songName;
+            new MiniDemoPlayer(songName);
         }
-
-        new MiniDemoPlayer(songName);    
     </script>
 </body>
 </html>

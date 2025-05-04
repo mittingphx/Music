@@ -52,9 +52,15 @@
         .folder-readme {
             margin-top: 15px;
             padding: 15px;
-            background: white;
+            background: #f8f9fa;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .readme-content {
+            font-family: monospace;
+            white-space: pre;
+            margin: 0;
         }
         .loading {
             color: #666;
@@ -71,16 +77,31 @@
     <ul class="folder-list" id="folderList"></ul>
 
     <script>
-        async function loadFolderReadme(folder) {
+        async function loadFolderReadme() {
             try {
-                const response = await fetch(`${folder === '' ? '' : folder + '/'}README.md`);
+                const response = await fetch('README.md');
                 if (!response.ok) {
                     return null;
                 }
                 return await response.text();
             } catch (error) {
+                console.error('Error loading README.md:', error);
                 return null;
             }
+        }
+
+        function createFolderItem(folder) {
+            const item = document.createElement('li');
+            item.className = 'folder-item';
+            
+            const folderLink = document.createElement('a');
+            folderLink.href = folder + '/';
+            folderLink.className = 'folder-name';
+            folderLink.innerHTML = `<span class="folder-icon">📁</span> ${folder}`;
+            
+            item.appendChild(folderLink);
+            
+            return { item };
         }
 
         function createFolderItem(folder) {
@@ -113,7 +134,17 @@
             // Add public README.md at the bottom
             const readmeContainer = document.createElement('div');
             readmeContainer.className = 'folder-readme';
-            readmeContainer.innerHTML = markdownToHtml(await loadFolderReadme('public')); // Load public README.md
+            
+            const readmeContent = await loadFolderReadme();
+            if (readmeContent) {
+                const pre = document.createElement('pre');
+                pre.className = 'readme-content';
+                pre.textContent = readmeContent;
+                readmeContainer.appendChild(pre);
+            } else {
+                readmeContainer.textContent = 'README.md not found';
+            }
+            
             folderList.appendChild(readmeContainer);
         }
 

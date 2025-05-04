@@ -10,9 +10,12 @@
 class MiniDemoPlayer {
     constructor(songName) {
         this.songName = songName;
-        this.audioFile = `../songs/${songName}.mp3`;
-        this.lyricsFile = `../songs/${songName}.txt`;
-        this.imageFile = `../songs/${songName}.jpg`;
+        if (this.songName.indexOf('?') > -1) {
+            this.songName = this.songName.substring(0, this.songName.indexOf('?'));
+        }   
+        this.audioFile = `../songs/${this.songName}.mp3`;
+        this.lyricsFile = `../songs/${this.songName}.txt`;
+        this.imageFile = `../songs/${this.songName}.jpg`;
         this.DEFAULT_IMAGE = '../default-image.jpg';
         
         // Check if we should play the song automatically

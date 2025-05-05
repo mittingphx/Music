@@ -1,35 +1,57 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 20px;
-    background: linear-gradient(rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.9)),
-                url('sixofswords-logo.png') center/contain fixed;
-    background-blend-mode: multiply;
+    padding: 0;
+    background: url('sixofswords-logo.png') top/cover fixed no-repeat;
+    backdrop-filter: blur(4px);
     color: #333;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    padding-bottom: 100px;
+    overflow-x: hidden;
 }
 
 header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #2c3e50;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    margin:0;
+    padding:20px;
     text-align: center;
-    margin-bottom: 40px;
 }
 
-h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin: 0 0 10px 0;
-}
-
-h2 {
+header h1 {
     font-size: 1.5rem;
-    color: #34495e;
+    margin: 0 0 5px 0;
+}
+
+header h2 {
+    font-size: 1.2rem;
     margin: 0 0 20px 0;
 }
+
+header p {
+    margin: 0;
+    padding: 0;
+}
+
+.list-container {
+    max-width: 1000px;
+    margin: 2rem auto 0;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    width: calc(100% - 2rem);
+    box-sizing: border-box;
+    min-height: calc(100vh - 200px);
+}
+
 
 .song-grid {
     display: grid;
@@ -42,7 +64,7 @@ h2 {
     background: white;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
 }
 
@@ -68,7 +90,7 @@ h2 {
 }
 
 .song-text {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.7);
     border-radius: 10px;
     padding: 10px;
     margin: 0 40px 0 0;

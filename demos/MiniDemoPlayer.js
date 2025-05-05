@@ -258,6 +258,19 @@ class MiniDemoPlayer {
         this.playBtn.addEventListener('click', () => this.togglePlay());
         this.prevBtn.addEventListener('click', () => this.handlePrev());
         this.nextBtn.addEventListener('click', () => this.handleNext());
+        
+        // Progress bar click to seek
+        const progressContainer = document.querySelector('.progress-container');
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            this.audio.currentTime = pos * this.audio.duration;
+            
+            // If audio is not playing, update the progress bar immediately
+            if (this.audio.paused) {
+                this.updateProgress();
+            }
+        });
     }
 
     /**

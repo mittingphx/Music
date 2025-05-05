@@ -16,7 +16,7 @@ RESET="\033[0m"
 SERVER_PID=""
 PORT=3000
 PYTHON_CMD="python3"
-SONG_PATH="./public/songs/"
+SONG_PATH="./songs/"
 APP_VERSION="0.1.0"
 
 # Functions for colored output
@@ -117,22 +117,11 @@ function start_server() {
         return 1
     fi
     
-    # Check if public directory exists
-    if [ ! -d "public" ]; then
-        print_error "Public directory not found. Please create it and add your web files."
-        return 1
-    fi
-    
     print_success "Starting development server on port $PORT..."
-    # Change to public directory and start server
-    (cd public && $PYTHON_CMD -m http.server $PORT 2>/dev/null) &
+    # Start server from root directory
+    $PYTHON_CMD -m http.server $PORT 2>/dev/null &
     # Wait for server to start
     sleep 1
-    # Verify server is serving from public directory
-    if [ ! -f "public/README.md" ]; then
-        print_error "README.md not found in public directory"
-        return 1
-    fi
     SERVER_PID=$!
     sleep 1
     
@@ -143,8 +132,8 @@ function start_server() {
     
     print_success "Server started on port $PORT (PID: $SERVER_PID)"
     print_info "Access the site at: http://localhost:$PORT"
-    print_info "The public directory is the root of the web server"
-    print_info "Note: The server serves files from the public directory, so http://localhost:$PORT/ will show public/index.html"
+    print_info "The root directory is the root of the web server"
+    print_info "Note: The server serves files from the project root directory, so http://localhost:$PORT/ will show index.html"
 }
 
 function stop_server() {

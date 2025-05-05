@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Player - Scott Mitting Music</title>
+    <link rel="icon" href="../favicon.png" type="image/png">
+    <link rel="stylesheet" href="player.css">
+</head>
+<body>
+    <div class="breadcrumb-outer-container">
+        <div class="breadcrumb-container">
+            <a href="index.html" class="back-link">
+                <span class="back-icon">&lt; Back to List</span>
+            </a>
+            <nav class="breadcrumbs">
+                <a href="index.html" class="breadcrumb-link">🌐 Demo Music Player</a>
+                <span class="separator">></span>
+                <a href="index.html" class="breadcrumb-link">📁 demos/</a>
+                <span class="separator">></span>
+                <span id="song-breadcrumb">🎵 Loading...</span>
+            </nav>
+        </div>
+    </div>
+    <div class="player-container">
+        <div class="song-header">
+            <div class="song-info">
+                <h1 id="song-title" class="song-title">Loading...</h1>
+                <p id="song-credits" class="song-credits">Loading...</p>
+            </div>
+            <img id="song-image" class="song-image" src="default-image.jpg" alt="Song Cover">
+        </div>        
+
+        <div class="audio-player">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            <div class="controls">
+                <button id="prev-btn" class="control-btn">⏮️</button>
+                <button id="play-btn" class="control-btn">▶️</button>
+                <button id="next-btn" class="control-btn">⏭️</button>
+            </div>
+        </div>
+
+        <div class="lyrics-container">
+            <h2>Lyrics</h2>
+            <div id="lyrics" class="lyrics">Loading lyrics...</div>
+        </div>
+    </div>    
+
+    <footer>
+        <p>&copy; 2025 Six of Swords Entertainment and Scott Mitting. All rights reserved.</p>
+    </footer>
+
+    <script src="MiniDemoPlayer.js"></script>
+    <script>
+        // Initialize the mini demo player
+        const songName = window.location.hash.substring(1);
+        if (!songName) {
+            document.querySelector('.error-message').textContent = 'Please provide a song name in the URL hash (e.g., #song-name)';
+            document.querySelector('.player-container').style.display = 'none';
+        } else {
+            // Set the song breadcrumb text
+            document.getElementById('song-breadcrumb').textContent = '🎵 ' + songName;
+            new MiniDemoPlayer(songName);
+        }
+    </script>
+</body>
+</html>

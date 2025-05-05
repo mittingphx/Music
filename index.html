@@ -1,8 +1,165 @@
-<html>
-  <head><title>Loading...</title></head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Demos - Folders</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .folder-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .folder-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .folder-item:hover {
+            transform: translateY(-2px);
+        }
+        .folder-icon {
+            margin-right: 8px;
+        }
+        .folder-name {
+            text-decoration: none;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .folder-name:hover {
+            color: #3498db;
+        }
+        .folder-name {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .folder-readme {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .readme-content {
+            font-family: monospace;
+            white-space: pre;
+            margin: 0;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #e74c3c;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Demos - Folders</h1>
+    <ul class="folder-list" id="folderList"></ul>
+
     <script>
-      document.location = 'public/';
+        async function loadFolderReadme() {
+            try {
+                const response = await fetch('README.md');
+                if (!response.ok) {
+                    return null;
+                }
+                return await response.text();
+            } catch (error) {
+                console.error('Error loading README.md:', error);
+                return null;
+            }
+        }
+
+        function createFolderItem(folder) {
+            const item = document.createElement('li');
+            item.className = 'folder-item';
+            
+            const folderLink = document.createElement('a');
+            folderLink.href = folder + '/';
+            folderLink.className = 'folder-name';
+            folderLink.innerHTML = `<span class="folder-icon">📁</span> ${folder}`;
+            
+            item.appendChild(folderLink);
+            
+            return { item };
+        }
+
+        function createFolderItem(folder) {
+            const item = document.createElement('li');
+            item.className = 'folder-item';
+            
+            const folderLink = document.createElement('a');
+            folderLink.href = folder + '/';
+            folderLink.className = 'folder-name';
+            folderLink.innerHTML = `<span class="folder-icon">📁</span> ${folder}`;
+            
+            item.appendChild(folderLink);
+            
+            return { item };
+        }
+
+        async function fetchFolders() {
+            return ['demos'];
+        }
+
+        async function initialize() {
+            const folderList = document.getElementById('folderList');
+            const folders = await fetchFolders();
+
+            for (const folder of folders) {
+                const { item } = createFolderItem(folder);
+                folderList.appendChild(item);
+            }
+
+            // Add public README.md at the bottom
+            const readmeContainer = document.createElement('div');
+            readmeContainer.className = 'folder-readme';
+            
+            const readmeContent = await loadFolderReadme();
+            if (readmeContent) {
+                const pre = document.createElement('pre');
+                pre.className = 'readme-content';
+                pre.textContent = readmeContent;
+                readmeContainer.appendChild(pre);
+            } else {
+                readmeContainer.textContent = 'README.md not found';
+            }
+            
+            folderList.appendChild(readmeContainer);
+        }
+
+        // Simple markdown to HTML conversion
+        function markdownToHtml(markdown) {
+            return markdown
+                .replace(/^#\s+(.+)/, '<h2>$1</h2>')
+                .replace(/^##\s+(.+)/g, '<h3>$1</h3>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
     </script>
-  </body>
+    <script src="favicon-animator.js"></script>
+</body>
 </html>

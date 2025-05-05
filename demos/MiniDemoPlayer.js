@@ -19,7 +19,7 @@ class MiniDemoSettings {
     constructor(overrides = {}) {
         // Default settings
         this.basePath = '../songs/';
-        this.defaultImage = '../default-image.jpg';
+        this.defaultImage = '/default-image.png';
         
         // Override settings if provided
         Object.assign(this, overrides);
@@ -194,6 +194,7 @@ class MiniDemoPlayer {
         this.nextBtn = document.getElementById('next-btn');
         this.songImage = document.getElementById('song-image');
         this.songTitle = document.getElementById('song-title');
+        this.$songName = document.querySelector('.song-name');
         this.songBreadcrumb = document.getElementById('song-breadcrumb');
         this.songCredits = document.getElementById('song-credits');
         this.lyricsDisplay = document.getElementById('lyrics');
@@ -217,32 +218,164 @@ class MiniDemoPlayer {
      */
     handleAutoPlay() {
 
-        // Set up an emergency play feature in case autoplay is blocked
-        const emergencyPlayOnClick = () => {
-            this.setPlayState(true);
-            document.removeEventListener('click', emergencyPlayOnClick);
-        }
-        const onAutoPlayFailed = () => {
-            alert('AUTOPLAY FAILED:\nPlease allow autoplay in your browser settings to play the song.\nYou will need to click anywhere in the browser to start the song.');            
-            document.addEventListener('click', emergencyPlayOnClick);
-        }
-
         // set up autoplay
         try {
             this.audio.play();
             this.playBtn.textContent = '⏸️';
         } 
-        catch (error) {
-            onAutoPlayFailed();
+        catch (error) { 
+            this.showAutoplayOverlay();
             return;
         }                
 
-        // remove the emergency play feature if the play succeeded
+        // if the audio is still paused, show the autoplay overlay
         setTimeout(() => {
-            if (this.audio.paused) {
-                onAutoPlayFailed();
+            if (this.audio.paused) { 
+                this.showAutoplayOverlay();
             }
         }, 100);
+    }
+
+    /**
+     * Shows the autoplay overlay
+     */
+    showAutoplayOverlay() {
+        const overlay = document.getElementById('autoplay-overlay');
+        if (overlay) {
+            overlay.classList.add('visible');
+            
+            // Add one-time click handler
+            const clickHandler = () => {
+                this.audio.play().then(() => {
+                    overlay.classList.remove('visible');
+                    this.playBtn.textContent = '⏸️';
+                }).catch(e => console.error('Playback failed:', e));
+                overlay.removeEventListener('click', clickHandler);
+            };
+            
+            overlay.addEventListener('click', clickHandler);
+        }
+    }
+
+    async togglePlay() {
+        if (this.audio.paused) {
+            try {
+                await this.audio.play();
+                this.playBtn.textContent = '⏸️';
+                // Hide overlay if it's visible
+                const overlay = document.getElementById('autoplay-overlay');
+                if (overlay) overlay.classList.remove('visible');
+            } catch (error) {
+                console.error('Playback failed:', error);
+                this.showAutoplayOverlay();
+            }
+        } else {
+            this.audio.pause();
+            this.playBtn.textContent = '▶️';
+        }
+    }
+
+    /**
+     * Cleans up the current audio element
+     */
+    cleanupAudio() {
+        if (this.audio) {
+            // Remove all event listeners
+            const newAudio = this.audio.cloneNode(false);
+            this.audio.pause();
+            this.audio.src = '';
+            this.audio.load();
+            if (this.audio.parentNode) {
+                this.audio.parentNode.replaceChild(newAudio, this.audio);
+            }
+            this.audio = newAudio;
+        }
+    }
+
+    /**
+     * Handles hash changes to load the appropriate song
+     */
+    async handleHashChange() {
+        const hash = window.location.hash.substring(1);
+        if (hash && hash !== this.songName) {
+            this.songName = decodeURIComponent(hash);
+            this.audioFile = `${this.settings.get('basePath')}${this.songName}.mp3`;
+            this.lyricsFile = `${this.settings.get('basePath')}${this.songName}.txt`;
+            this.imageFile = `${this.settings.get('basePath')}${this.songName}.jpg`;
+            
+            // Store play state
+            const wasPlaying = !this.audio.paused;
+            
+            try {
+                // Clean up current audio
+                this.cleanupAudio();
+                
+                // Create new audio element and set source
+                this.audio = new Audio(this.audioFile);
+                this.audio.preload = 'auto';
+                
+                // Reattach event listeners
+                this.initializePlayer();
+                
+                // Wait for the audio to be ready to play
+                await new Promise((resolve) => {
+                    const canPlay = () => {
+                        this.audio.removeEventListener('canplaythrough', canPlay);
+                        resolve();
+                    };
+                    this.audio.addEventListener('canplaythrough', canPlay);
+                    
+                    // Fallback in case canplaythrough doesn't fire
+                    setTimeout(resolve, 1000);
+                });
+                
+                // Load the new song
+                await this.loadSong();
+                
+                // Reset position and play if needed
+                this.audio.currentTime = 0;
+                if (wasPlaying) {
+                    await this.audio.play().catch(e => console.error('Playback failed:', e));
+                }
+            } catch (error) {
+                console.error('Error changing song:', error);
+            }
+        }
+    }
+
+    /**
+     * Sets up the progress bar handlers
+     */
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progress-bar');
+        this.progressFill = document.querySelector('.progress-fill');
+        
+        if (this.progressBar) {
+            // Handle input (while dragging)
+            this.progressBar.addEventListener('input', (e) => {
+                const seekTime = (e.target.value / 100) * this.audio.duration;
+                this.audio.currentTime = seekTime;
+                this.updateProgressFill();
+            });
+            
+            // Handle change (after release)
+            this.progressBar.addEventListener('change', () => {
+                if (!this.audio.paused) {
+                    this.audio.play();
+                }
+            });
+        }
+    }
+    
+    /**
+     * Updates the progress fill based on current time
+     */
+    updateProgressFill() {
+        if (this.progressBar && this.progressFill && !isNaN(this.audio.duration)) {
+            const progress = (this.audio.currentTime / this.audio.duration) * 100;
+            this.progressBar.value = progress;
+            //this.progressFill.style.width = `${progress}%`;
+        }
     }
 
     /**
@@ -258,19 +391,17 @@ class MiniDemoPlayer {
         this.playBtn.addEventListener('click', () => this.togglePlay());
         this.prevBtn.addEventListener('click', () => this.handlePrev());
         this.nextBtn.addEventListener('click', () => this.handleNext());
+
+        // Set up progress bar
+        this.setupProgressBar();
         
-        // Progress bar click to seek
-        const progressContainer = document.querySelector('.progress-container');
-        progressContainer.addEventListener('click', (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            this.audio.currentTime = pos * this.audio.duration;
-            
-            // If audio is not playing, update the progress bar immediately
-            if (this.audio.paused) {
-                this.updateProgress();
-            }
-        });
+        // If audio is not playing, update the progress bar immediately
+        if (this.audio.paused) {
+            this.updateProgress();
+        }
+        
+        // Handle hash changes for navigation
+        window.addEventListener('hashchange', () => this.handleHashChange());
     }
 
     /**
@@ -294,8 +425,7 @@ class MiniDemoPlayer {
             const normalizedText = text.replace(/\r\n/g, '\n');
             
             // Parse lyrics file to extract title and credits
-            const lines = normalizedText.split('\n');            
-            this.setSongTitle(lines[0].replace('# ', ''));
+            const lines = normalizedText.split('\n');        
 
             
             // Find the credits section
@@ -303,12 +433,14 @@ class MiniDemoPlayer {
             const lyricsIndex = lines.indexOf('## Lyrics');
             
             // Extract and format credits
+            const credits = {};
             if (creditsIndex !== -1 && lyricsIndex !== -1) {
-                const creditsLines = lines.slice(creditsIndex + 1, lyricsIndex);
+                const creditsLines = lines.slice(creditsIndex + 1, lyricsIndex);                
                 const formattedCredits = creditsLines
                     .map(line => {
                         const [key, value] = line.split(':').map(part => part.trim());
                         if (key && value) {
+                            credits[key] = value;
                             return `${key}: ${value}`;
                         }
                         return line.trim();
@@ -318,6 +450,11 @@ class MiniDemoPlayer {
                 
                 this.songCredits.innerHTML = formattedCredits;
             }
+
+            // Extract and format song title and artist
+            const songTitle = lines[0].replace('#', '').trim();
+            const artist = credits['Artist'];
+            this.setSongTitle(songTitle, artist);
 
             // Extract and format lyrics
             if (lyricsIndex !== -1) {
@@ -331,6 +468,36 @@ class MiniDemoPlayer {
             }
         } catch (error) {
             this.lyricsDisplay.textContent = 'Error loading lyrics';
+        }
+    }
+
+    /**
+     * Updates the progress bar and current time display
+     */
+    updateProgress() {
+        this.updateProgressFill();
+        if (this.currentTime && !isNaN(this.audio.currentTime)) {
+            this.currentTime.textContent = this.formatTime(this.audio.currentTime);
+        }
+    }
+
+    /**
+     * Formats time in seconds to MM:SS format
+     * @param {number} seconds - Time in seconds
+     * @returns {string} Formatted time string
+     */
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    /**
+     * Updates the duration display
+     */
+    updateDuration() {
+        if (!isNaN(this.audio.duration)) {
+            this.duration.textContent = this.formatTime(this.audio.duration);
         }
     }
 
@@ -362,10 +529,12 @@ class MiniDemoPlayer {
      * Sets the song title in the UI.
      * 
      * @param {string} title - The title of the song
+     * @param {string} artist - The artist of the song
      */
-    setSongTitle(title) {
+    setSongTitle(title, artist) {
         this.songTitle.textContent = title;
         this.songBreadcrumb.textContent = title;
+        this.$songName.innerHTML = '<b>' + title + '</b>' + (artist ? ' <small>by ' + artist + '</small>' : '');
     }
 
 
@@ -374,7 +543,8 @@ class MiniDemoPlayer {
      */
     updateProgress() {
         const progress = (this.audio.currentTime / this.audio.duration) * 100;
-        this.progressBar.style.width = `${progress}%`;
+        //this.progressBar.style.width = `${progress}%`;
+        this.progressBar.value = progress;
         this.currentTime.textContent = this.formatTime(this.audio.currentTime);
     }
 
@@ -398,28 +568,89 @@ class MiniDemoPlayer {
     }
 
     /**
-     * Handles the end of a song by updating the play button icon.
+     * Handles the end of a song by simulating a click on the next button
      */
     handleSongEnd() {
         this.playBtn.textContent = '▶️';
+        // Simulate a click on the next button to ensure consistent behavior
+        this.navigateSong(1, true);
+    }
+
+    /**
+     * Loads the song list from manifest.txt
+     * @returns {Promise<Array<string>>} Array of song names
+     */
+    async loadSongList() {
+        try {
+            const response = await fetch(this.settings.get('basePath') + 'manifest.txt');
+            const text = await response.text();
+            return text.split('\n').filter(song => song.trim());
+        } catch (error) {
+            console.error('Error loading song list:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Gets the current song index from the manifest
+     * @param {Array<string>} songList - List of song names
+     * @returns {number} Index of current song, or -1 if not found
+     */
+    getCurrentSongIndex(songList) {
+        return songList.findIndex(song => song === this.songName);
+    }
+
+    /**
+     * Navigates to a song by its index in the manifest
+     * @param {number} direction - 1 for next, -1 for previous
+     * @param {boolean} autoplay - Whether to autoplay the song
+     */
+    async navigateSong(direction, autoplay = false) {
+        const songList = await this.loadSongList();
+        if (songList.length === 0) return;
+        
+        let currentIndex = this.getCurrentSongIndex(songList);
+        if (currentIndex === -1) currentIndex = 0;
+        
+        let newIndex = currentIndex + direction;
+        
+        // Handle wrapping
+        if (newIndex < 0) {
+            newIndex = songList.length - 1;
+        } else if (newIndex >= songList.length) {
+            newIndex = 0;
+        }
+        
+        // Only navigate if we have a valid new song
+        if (newIndex !== currentIndex) {
+            const newSong = songList[newIndex];
+            const newUrl = `player.html?play=true#${encodeURIComponent(newSong)}`;
+            
+            // Update the URL without reloading the page
+            window.history.pushState({ song: newSong }, '', newUrl);
+            
+            // Trigger the hash change handler to load the new song
+            this.handleHashChange();
+
+            // start the song if autoplay is enabled
+            if (autoplay) {
+                this.playBtn.click();
+            }
+        }
     }
 
     /**
      * Handles the previous song button click.
-     * Currently a placeholder for future playlist functionality.
      */
     handlePrev() {
-        // To be implemented with playlist support
-        console.log('Previous song not implemented');
+        this.navigateSong(-1);
     }
 
     /**
      * Handles the next song button click.
-     * Currently a placeholder for future playlist functionality.
      */
     handleNext() {
-        // To be implemented with playlist support
-        console.log('Next song not implemented');
+        this.navigateSong(1);
     }
 
     /**
@@ -432,4 +663,6 @@ class MiniDemoPlayer {
 
 // Export the classes
 MiniDemoPlayer.exportClass();
-MiniDemoSongList.exportClass();
+if (typeof MiniDemoSongList !== 'undefined') {
+    MiniDemoSongList.exportClass();
+}

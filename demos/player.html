@@ -77,5 +77,48 @@
             new MiniDemoPlayer(songName);
         }
     </script>
+
+<script>
+    const img = document.getElementById('song-image');
+  
+    let direction = 1;
+    const scrollDuration = 20000; // 20 seconds per direction
+    let startTime = null;
+  
+    function scrollLoop(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / scrollDuration, 1);
+  
+      const container = document.querySelector('.song-header');
+      const maxScroll = img.naturalHeight - container.offsetHeight;
+  
+      if (maxScroll <= 0) return; // No scrolling needed
+  
+      const topPos = direction === 1
+        ? -progress * maxScroll
+        : -(1 - progress) * maxScroll;
+  
+      img.style.top = `${topPos}px`;
+  
+      if (progress < 1) {
+        requestAnimationFrame(scrollLoop);
+      } else {
+        direction *= -1;
+        startTime = null;
+        setTimeout(() => requestAnimationFrame(scrollLoop), 1000); // pause between loops
+      }
+    }
+  
+    window.addEventListener('load', () => {
+      if (img.complete) {
+        setTimeout(() => requestAnimationFrame(scrollLoop), 1000);
+      } else {
+        img.onload = () => setTimeout(() => requestAnimationFrame(scrollLoop), 1000);
+      }
+    });
+  </script>
+  
+  
 </body>
 </html>
